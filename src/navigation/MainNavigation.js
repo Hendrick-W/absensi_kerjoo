@@ -49,7 +49,7 @@ const MainNavigation = ({
         component={DataAndMapPage}
         options = {{
           tabBarIcon: ({ focused}) => (
-            <MaterialIcons name="library-books" color={focused? "#EF9C27" : "#999999"} size={focused? 35: 25} />
+            <MaterialIcons name="history" color={focused? "#EF9C27" : "#999999"} size={focused? 35: 25} />
           ),
           tabBarLabel: "History"
         }}  
@@ -59,7 +59,7 @@ const MainNavigation = ({
         component={LogOutPage}
         options = {{
           tabBarIcon: ({ focused}) => (
-            <MaterialIcons name="edit" color={focused? "#EF9C27" : "#999999"} size={focused? 35: 25} />
+            <MaterialIcons name="logout" color={focused? "#EF9C27" : "#999999"} size={focused? 35: 25} />
           ),
           tabBarLabel: "Log Out"
         }}   

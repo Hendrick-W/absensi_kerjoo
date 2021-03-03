@@ -8,7 +8,7 @@ import FormData from 'form-data';
 async function authSignIn(payload){
   const {email, password} = payload
   const response = await authAPI.post('/auth', {email, password})
-  return response.data
+  return response.data;
 }
 
 function* signIn({payload}){
