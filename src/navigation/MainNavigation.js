@@ -14,8 +14,8 @@ const Tab = createBottomTabNavigator();
 const DataAndMapPage = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name = "DataAbsenPage" component={DataAbsenPage}/>
-      <Stack.Screen name="MapPage" component={MapPage}/>
+      <Stack.Screen name = "History" component={DataAbsenPage}/>
+      <Stack.Screen name="Map" component={MapPage}/>
     </Stack.Navigator>
   )
 }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux'
 import { Text, TouchableOpacity, 
   View, StyleSheet,
@@ -7,7 +7,6 @@ import Geolocation from '@react-native-community/geolocation';
 import FormData from 'form-data';
 
 import authAPI from '../../api'
-import { log } from 'react-native-reanimated';
 
   const height = Dimensions.get("screen").height
   const width = Math.round(Dimensions.get("screen").width)
@@ -16,19 +15,38 @@ const AbsenPage = ({
     params,
 }) => {
   const [typeAbsensi, setTypeAbsensi] = useState('')
-  const {access_token} = useSelector(state=>state.user)
+  const {id, access_token} = useSelector(state=>state.user)
+  const [loading, setLoading] = useState(false)
+  let check = []
+
+  useEffect(()=>{
+    let date = new Date().toISOString().slice(0, 10)
+    authAPI.get('/attendances', {'headers': { 'Authorization': `Bearer ${access_token}`}},  {id: id, log_date:date})
+      .then((value)=>{
+        check = []
+        value.data.data.map((arr)=>{
+          if(arr.log_date == date){
+            check.push(arr.type_id)      
+          }
+        })
+        console.log(check)
+      })
+  })
   const postAttendance = () => {
+    check.includes(parseInt(typeAbsensi)) ? 
+    alert('Already inputed') 
+    :
     Geolocation.getCurrentPosition(position=>{
       // alert(JSON.stringify(position))
+      setLoading(true)
       const {longitude, latitude} = position.coords;
       let data = new FormData();
       var d = new Date();
       var year = d.getFullYear()
-      var month = d.getMonth() < 10 ? '0'+ d.getMonth() : d.getMonth()
+      var month = d.getMonth() < 10 ? '0'+ (d.getMonth()+1) : (d.getMonth()+1)
       var day = d.getDate() < 10 ? '0'+ d.getDate() : d.getDate()
       var log_date = `${year}-${month}-${day}`
       var log_time = `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`
-      console.log(longitude)
       data.append('type_id', typeAbsensi)
       data.append('log_date', log_date)
       data.append('log_time', log_time)
@@ -36,7 +54,10 @@ const AbsenPage = ({
       data.append('latitude', latitude)
       /**Send Data */
       authAPI.post('/attendances', data, {'headers': { 'Authorization': `Bearer ${access_token}`}})
-      .then(()=>alert('Success'))
+      .then(()=>{
+        setLoading(false)
+        alert('Success')
+      })
       .catch((err)=>alert('There is an error!'))
     }, 
     error => alert(error.message),
@@ -49,9 +70,12 @@ const AbsenPage = ({
       backgroundColor:'white',
       justifyContent:'center'
     }}>
+      {loading && <View style={{alignSelf: 'center'}}>
+        <Text style={{fontSize: 20}}>Loading....</Text>
+      </View>}
       <View style={{flexDirection:'row', justifyContent:'space-around'}}>
         <View>
-          <Text>Tipe Absensi</Text>
+          <Text >Tipe Absensi</Text>
           <TouchableOpacity
             style={typeAbsensi == 1 ? STYLES.selectedButton:STYLES.nonSelecterdButton}
             onPress={()=>{
